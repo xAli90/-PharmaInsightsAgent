@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/pytest:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git fetch:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue list:*)",
+      "Bash(curl -s localhost:1234/v1/models)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(pip install:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python -m pip install:*)",
+      "Bash(python3 -m pip install:*)",
+      "Bash(.venv/bin/python -m pip install:*)",
+      "Bash(.venv/bin/python3 -m pip install:*)",
+      "Bash(.venv/bin/pip3 install:*)",
+      "Bash(uv pip install:*)",
+      "Bash(.venv/bin/pip install:*)"
+    ]
+  }
+}
