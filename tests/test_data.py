@@ -1,3 +1,9 @@
+"""Tests of loading the CSV, normalizing drug codes (D-48) and drawing the sample.
+
+The sample checks use PHM-101 from the CSV and small built tables: 4 reviews per band,
+the same IDs on every call, all reviews of a small band and the band edges (D-46, D-56).
+"""
+
 import pandas as pd
 
 from data import load_reviews, normalize_drug_code, sample_reviews

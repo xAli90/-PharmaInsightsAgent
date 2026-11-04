@@ -1,3 +1,10 @@
+"""Tests of the two tools against the real CSV.
+
+They check the statistics of one drug and of all drugs (D-29, D-48), the review fields
+with "(leer)" for missing texts and the sample line (D-48, D-56), and the answer for an
+unknown drug (D-25).
+"""
+
 import json
 
 import pandas as pd

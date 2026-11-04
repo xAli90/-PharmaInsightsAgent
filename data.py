@@ -1,3 +1,9 @@
+"""Load the review CSV and draw the sample of reviews the model reads.
+
+Drug codes are normalized to the form PHM-101 (D-48). The sample takes up to PER_BAND
+reviews from each rating band with a fixed seed (D-46, D-56).
+"""
+
 import re
 from pathlib import Path
 
@@ -12,6 +18,7 @@ PER_BAND = 4
 # A fixed seed makes the same question read the same sample, so runs are repeatable.
 SEED = 42
 
+# Low, middle and high ratings; 4 still counts as low and 7 already as high (D-46).
 RATING_BANDS = ((1, 4), (5, 6), (7, 10))
 
 DRUG_CODE_PATTERN = re.compile(r"PHM[- ]?(\d{3})")

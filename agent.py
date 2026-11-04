@@ -1,3 +1,11 @@
+"""The agent loop: call the model, run the tools it asks for, stop after max_rounds calls.
+
+The plain openai client is passed in, so tests can hand in a fake (D-02, D-36); one round
+is one model call (D-16). Mistakes of the model go back to it as error dicts, while an empty
+answer, an API error or an unreadable CSV aborts with AgentError (D-49, D-50). run_agent
+returns the tool results, so answer.py can build the data basis from them (D-57).
+"""
+
 import json
 
 import openai
@@ -17,6 +25,7 @@ NOT_AN_OBJECT_ERROR = 'Die Argumente müssen ein JSON-Objekt sein, z. B. {"drug"
 
 TOOL_FUNCTIONS = {"get_reviews": get_reviews, "get_rating_statistics": get_rating_statistics}
 
+# Derived from the TOOLS schema, so the argument check cannot drift from what the model is offered.
 ALLOWED_ARGUMENTS = {
     tool["function"]["name"]: set(tool["function"]["parameters"]["properties"]) for tool in TOOLS
 }
@@ -29,8 +38,9 @@ class AgentError(Exception):
 def run_agent(client, model: str, question: str, max_rounds: int = 3) -> tuple[str, list[dict]]:
     """Answer the question with tool calls; return the answer and the tool results in call order.
 
-    One round is one call of the model (D-16). The last round has no tools, so the model
-    can only answer with the data it already has (D-49).
+    One round is one call of the model (D-16). The last round leaves out tools, since
+    LM Studio may ignore tool_choice="none"; the model can then only answer with the data
+    it already has (D-49).
     """
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},

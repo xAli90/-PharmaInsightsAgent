@@ -28,6 +28,10 @@
 - Schlicht und lesbar: Der Code soll sich ohne KI-Hilfe lesen und ändern
   lassen. Kurze Funktionen, sprechende Namen, ein Docstring je Funktion,
   kein toter Code, keine Abstraktion auf Vorrat.
+- Jedes Modul und jede Testdatei beginnt mit einer Summary (Modul-Docstring,
+  zwei, drei Sätze): wozu sie da ist und auf welchen Log-Einträgen sie beruht.
+  Kommentare nur, wo der Code ein Warum nicht selbst zeigt; keine Kommentare,
+  die den Code nacherzählen (D-63).
 - Der System-Prompt liegt als `SYSTEM_PROMPT` in `prompts.py` (D-23),
   Vorlage ist `docs/system-prompt-entwurf.md`. Der `implementer` übernimmt ihn
   wörtlich; danach macht der `reviewer` ein Prompt-Injection-Review.
