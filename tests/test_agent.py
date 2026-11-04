@@ -85,9 +85,9 @@ def error_after_tool_call(name: str, arguments: str) -> dict:
 def test_answer_without_tools_takes_one_round():
     """A direct text answer ends the loop after one call, with system prompt and question."""
     client = FakeClient([text_response("Kurzfazit: Keine Daten abgerufen.")])
-    answer, review_ids = run_agent(client, MODEL, QUESTION)
+    answer, results = run_agent(client, MODEL, QUESTION)
     assert answer == "Kurzfazit: Keine Daten abgerufen."
-    assert review_ids == set()
+    assert results == []
     [call] = client.calls
     assert call["model"] == MODEL
     assert [message["role"] for message in call["messages"]] == ["system", "user"]
@@ -269,21 +269,30 @@ def test_response_without_choices_aborts():
         run_agent(client, MODEL, QUESTION)
 
 
-def test_review_ids_are_collected_from_get_reviews():
-    """The loop keeps the review IDs of the sample it handed to the model (D-57)."""
+def test_tool_results_are_returned_in_call_order():
+    """The loop returns every result it handed to the model, errors included (D-57)."""
     client = FakeClient(
         [
             tool_response(
                 ("get_rating_statistics", '{"drug": "PHM-101"}'),
                 ("get_reviews", '{"drug": "PHM-101"}'),
             ),
+            tool_response(("get_reviews", "{}")),
             text_response("Antwort"),
         ]
     )
-    _, review_ids = run_agent(client, MODEL, QUESTION)
-    expected = {review["review_id"] for review in get_reviews("PHM-101")["reviews"]}
-    assert len(expected) == 12
-    assert review_ids == expected
+    _, results = run_agent(client, MODEL, QUESTION)
+    assert results == [get_rating_statistics("PHM-101"), get_reviews("PHM-101"), get_reviews()]
+    assert results == tool_results(client.calls[2])
+
+
+def test_review_ids_are_collected_from_get_reviews():
+    """review_ids_from returns the 12 IDs of the sample handed to the model (D-57)."""
+    review_ids = review_ids_from(get_reviews("PHM-101"))
+    reviews = load_reviews()
+    drug_ids = set(reviews.loc[reviews["drug_name"] == "PHM-101", "review_id"])
+    assert len(review_ids) == 12
+    assert review_ids <= drug_ids
 
 
 def test_review_ids_from_results_without_reviews_are_empty():

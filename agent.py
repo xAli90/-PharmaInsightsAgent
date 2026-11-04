@@ -26,8 +26,8 @@ class AgentError(Exception):
     """An abort by the code; the message is German and meant for the user (D-49, D-50)."""
 
 
-def run_agent(client, model: str, question: str, max_rounds: int = 3) -> tuple[str, set[str]]:
-    """Answer the question with tool calls; return the answer and the retrieved review IDs.
+def run_agent(client, model: str, question: str, max_rounds: int = 3) -> tuple[str, list[dict]]:
+    """Answer the question with tool calls; return the answer and the tool results in call order.
 
     One round is one call of the model (D-16). The last round has no tools, so the model
     can only answer with the data it already has (D-49).
@@ -36,15 +36,15 @@ def run_agent(client, model: str, question: str, max_rounds: int = 3) -> tuple[s
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": question},
     ]
-    review_ids = set()
+    results = []
     for _ in range(max_rounds - 1):
         message = ask_model(client, model, messages, with_tools=True)
         if not message.tool_calls:
-            return answer_text(message), review_ids
+            return answer_text(message), results
         messages.append(assistant_message(message))
-        review_ids |= run_tool_calls(message.tool_calls, messages)
+        results += run_tool_calls(message.tool_calls, messages)
     message = ask_model(client, model, messages, with_tools=False)
-    return answer_text(message), review_ids
+    return answer_text(message), results
 
 
 def ask_model(client, model: str, messages: list[dict], with_tools: bool):
@@ -85,14 +85,14 @@ def assistant_message(message) -> dict:
     }
 
 
-def run_tool_calls(tool_calls, messages: list[dict]) -> set[str]:
-    """Run each tool call, append its framed result to messages and return the review IDs."""
-    review_ids = set()
+def run_tool_calls(tool_calls, messages: list[dict]) -> list[dict]:
+    """Run each tool call, append its framed result to messages and return the results."""
+    results = []
     for tool_call in tool_calls:
         result = call_tool(tool_call.function.name, tool_call.function.arguments)
-        review_ids |= review_ids_from(result)
+        results.append(result)
         messages.append(tool_message(tool_call.id, result))
-    return review_ids
+    return results
 
 
 def call_tool(name: str, arguments: str | None) -> dict:
