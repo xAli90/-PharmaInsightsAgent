@@ -1,3 +1,10 @@
+"""Tests of prompts.py: the system prompt and the frame around tool results.
+
+SYSTEM_PROMPT must equal the draft in docs/system-prompt-entwurf.md without its log
+references (D-23). Synthetic chat tokens and tags in a review text stay data inside the
+frame (D-05, D-62); the real instruction text of REV-0036 stays unfiltered inside it.
+"""
+
 import json
 import re
 from pathlib import Path

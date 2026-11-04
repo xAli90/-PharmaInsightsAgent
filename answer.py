@@ -1,7 +1,15 @@
+"""Post-processing of the model's answer: strip bold, add the data basis and warnings.
+
+The code, not the model, builds the data basis from the tool results (D-27, D-57). The
+warnings compare the IDs the answer cites with the fetched ones (D-28, D-51), and bold
+markers are removed (D-51).
+"""
+
 import re
 
 from agent import review_ids_from
 
+# Word boundaries keep REV-00011 and XREV-0001 from counting as REV-0001 (D-28).
 REVIEW_ID_PATTERN = re.compile(r"\bREV-\d{4}\b")
 
 # Lines the code adds below the answer; they stay German for every question (D-52, D-60).
@@ -32,6 +40,8 @@ def collect_drugs(results: list[dict]) -> dict[str, dict]:
     for result in results:
         if "error" in result:
             continue
+        # Statistics carry a list under "drugs"; samples and unknown drugs carry one "drug".
+        # An unknown drug thus gets neither count nor IDs and ends as "keine Daten" (D-57).
         if "drugs" in result:
             for statistics in result["drugs"]:
                 drugs.setdefault(statistics["drug"], {"count": None, "ids": set()})
@@ -63,6 +73,7 @@ def warnings(answer: str, fetched_ids: set[str]) -> list[str]:
     cited = cited_ids(answer)
     unfetched = sorted(cited - fetched_ids)
     lines = [UNFETCHED_ID_WARNING.format(review_id=review_id) for review_id in unfetched]
+    # Without fetched reviews, e.g. after statistics only, there is no ID to cite (D-51).
     if fetched_ids and not cited:
         lines.append(NO_ID_WARNING)
     return lines

@@ -1,3 +1,8 @@
+"""Smoke tests: the review CSV ships with the repository and the live marker is registered.
+
+The marker lets pytest -m "not live" deselect the tests that need LM Studio (D-35).
+"""
+
 from pathlib import Path
 
 CSV_PATH = Path(__file__).parent.parent / "data" / "pharma_reviews.csv"

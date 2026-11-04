@@ -1,3 +1,10 @@
+"""The two tools the model can call, get_reviews and get_rating_statistics, and their schema.
+
+Each tool returns a plain dict: get_reviews a stratified sample of reviews for one drug
+(D-48, D-56), get_rating_statistics statistics over all reviews of one drug or of all
+drugs (D-29, D-48). An unknown drug is no error and comes back with the known codes (D-25).
+"""
+
 from functools import cache
 
 import pandas as pd
@@ -45,6 +52,7 @@ TOOLS = [
 ]
 
 
+# A load that raises is not cached, so the next call tries again.
 @cache
 def cached_reviews() -> pd.DataFrame:
     """Load the review CSV once and reuse it for every tool call."""

@@ -1,3 +1,10 @@
+"""The system prompt and the frame in which tool results reach the model.
+
+SYSTEM_PROMPT lives here as a constant (D-23); its text is the approved draft word for
+word, minus the log references. Every tool result goes back as JSON with escaped angle
+brackets inside <daten> ... </daten> in the role tool, so review texts stay data (D-05, D-62).
+"""
+
 import json
 
 # Taken word for word from docs/system-prompt-entwurf.md, without the log references (D-23).

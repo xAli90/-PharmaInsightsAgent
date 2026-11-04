@@ -1,3 +1,9 @@
+"""Tests of the post-processing in answer.py, with real sample IDs from the CSV.
+
+They cover the data basis per drug (D-27, D-57), the ID check with word boundaries
+(D-28), the warning for an answer without ID and the removal of ** (D-51).
+"""
+
 from agent import run_agent
 from answer import cited_ids, data_basis, finish_answer, strip_bold, warnings
 from data import load_reviews

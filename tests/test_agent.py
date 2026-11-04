@@ -1,3 +1,10 @@
+"""Tests of the agent loop, with a fake client in place of the model (D-36).
+
+They cover the round limit and the last round without tools (D-16, D-49), errors that go
+back to the model versus errors that abort (D-50), the framed tool messages (D-62) and
+the tool results the loop returns (D-57).
+"""
+
 import json
 from types import SimpleNamespace
 
