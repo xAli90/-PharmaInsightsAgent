@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Adversariales Review der Planung (Decision Log, Prompt-Entwurf) oder eines Diffs im Pharma-Insights-Case. Versucht zu widerlegen - Anforderungen der Aufgabe, Datenrealität der CSV, Prompt Injection, erfundene Aussagen, Lesbarkeit des Codes - und meldet nur, was es belegen konnte. Nur lesend. Pro Aufruf eine Linse für ein Review aus mehreren Blickwinkeln.
+description: Adversariales Review der Planung (Decision Log, Prompt-Entwurf) oder eines Diffs im Pharma-Insights-Case. Versucht zu widerlegen - Anforderungen der Aufgabe, Datenrealität der CSV, Prompt Injection, erfundene Aussagen, Lesbarkeit des Codes - und meldet nur, was es belegen konnte. Nur lesend. Pro Aufruf ein Review mit einem Thema, für ein Review aus mehreren Blickwinkeln.
 model: fable
 effort: high
 disallowedTools: Edit, Write, NotebookEdit
