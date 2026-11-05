@@ -1,0 +1,18 @@
+$ .venv/bin/python main.py -v "Welche positiven und negativen Erfahrungen berichten Nutzer zu PHM-101?"
+
+Runde 1: get_rating_statistics({"drug":"PHM-101"}), get_reviews({"drug":"PHM-101"}) | Tokens 1356/107 | 6.7 s
+Runde 2: keine Tools | Tokens 2624/1427 | 49.2 s
+Gesamt: 2 Runden | Tokens 3980/1534 | 55.9 s
+Kurzfazit: Die Stichprobe zeigt ein gespaltenes Bild: mehrere Reviews berichten über eine spürbare Besserung der Kopfschmerzen, andere über keine oder nur wechselhafte Wirkung.
+
+Ratings: 70 Reviews; Verteilung: 28 mit Rating 1–4, 11 mit 5–6, 31 mit 7–10; Durchschnitt 5,7.
+
+Erfahrungen:
+- Positiv: Weniger Kopfschmerzen und Verbesserung im Alltag, teils mit Müdigkeit als Begleiterscheinung (REV-0311, REV-0201, REV-0216).
+- Neutral: Wechselhafte oder nur marginale Wirkung; unklare Zuordnung von Nebenwirkungen wie Müdigkeit, Schwindel, Magenproblemen (REV-0314, REV-0001, REV-0373, REV-0403, REV-0378, REV-0287).
+- Negativ: Keine klare Wirkung, zusätzliche Kopfschmerzen, ausgeprägte Müdigkeit mit tagsüberiger Einschränkung (REV-0113, REV-0381, REV-0107).
+
+Auffälligkeiten: REV-0311 beschreibt ein positives Gesamterlebnis (weniger Beschwerden, keine Nebenwirkungen, gutes Gesamturteil), trägt aber nur Rating 3; die Verfasserin selbst merkt an, die Bewertung passe möglicherweise nicht zur Beschreibung.
+
+Datenbasis:
+PHM-101: Statistik über 70 Reviews, Stichprobe 12 (REV-0001, REV-0107, REV-0113, REV-0201, REV-0216, REV-0287, REV-0311, REV-0314, REV-0373, REV-0378, REV-0381, REV-0403)

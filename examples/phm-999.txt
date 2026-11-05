@@ -1,0 +1,11 @@
+$ .venv/bin/python main.py -v "Welche Aussagen liegen zu PHM-999 vor?"
+
+Runde 1: get_rating_statistics({"drug":"PHM-999"}), get_reviews({"drug":"PHM-999"}) | Tokens 1352/101 | 4.2 s
+Runde 2: keine Tools | Tokens 1585/127 | 4.9 s
+Gesamt: 2 Runden | Tokens 2937/228 | 9.1 s
+Zu PHM-999 liegen keine Daten vor - weder Rating-Statistiken noch Reviews konnten abgerufen werden.
+
+Bekannte Präparate im System: PHM-101, PHM-202, PHM-303, PHM-404, PHM-505, PHM-606.
+
+Datenbasis:
+PHM-999: keine Daten

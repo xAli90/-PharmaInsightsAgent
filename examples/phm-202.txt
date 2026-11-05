@@ -1,0 +1,21 @@
+$ .venv/bin/python main.py -v "Was sind die häufigsten Kritikpunkte zu PHM-202? Nenne zwei konkrete Bewertungen mit ID."
+
+Runde 1: get_rating_statistics({"drug":"PHM-202"}), get_reviews({"drug":"PHM-202"}) | Tokens 1362/110 | 4.2 s
+Runde 2: keine Tools | Tokens 2606/1529 | 52.3 s
+Gesamt: 2 Runden | Tokens 3968/1639 | 56.5 s
+Kurzfazit: Die häufigsten Kritikpunkte sind eine ausbleibende Besserung der Allergiebeschwerden sowie wiederkehrende Nebenwirkungen.
+Ratings: 70 Reviews; Verteilung 1–4: 29, 5–6: 9, 7–10: 32; Durchschnitt 5,9.
+Erfahrungen:
+- Positiv: merkliche Besserung, weniger Niesanfälle, Entlastung im Alltag (REV-0399, REV-0333, REV-0226).
+- Neutral: Wirkung schwer einzuschätzen, Beobachtungen uneinheitlich (REV-0323, REV-0121).
+- Negativ: keine spürbare Verbesserung, Beschwerden unverändert (REV-0374, REV-0237, REV-0194).
+- Negativ: Nebenwirkungen – Übelkeit, ausgeprägte Müdigkeit, Kopfschmerzen, Magenprobleme (REV-0374, REV-0237, REV-0194, REV-0257).
+
+Zwei konkrete Beispiele:
+- REV-0194 (Rating 2, Hausstauballergie): kein verlässlicher Unterschied zu vorher, zusätzliche Kopfschmerzen als belastend; „deutlich bessere Wirkung gewünscht".
+- REV-0237 (Rating 3, Hausstauballergie): Beschwerden unverändert, ausgeprägte tagsüberige Müdigkeit; Bewertung ausdrücklich negativ.
+
+Auffälligkeiten: keine gefunden.
+
+Datenbasis:
+PHM-202: Statistik über 70 Reviews, Stichprobe 12 (REV-0109, REV-0121, REV-0194, REV-0198, REV-0226, REV-0237, REV-0257, REV-0323, REV-0333, REV-0341, REV-0374, REV-0399)
