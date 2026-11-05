@@ -145,6 +145,24 @@ def test_empty_answer_aborts(content):
         run_agent(client, MODEL, QUESTION)
 
 
+def test_reasoning_effort_reaches_every_model_call():
+    """A given reasoning_effort goes to every call, with and without tools (D-19)."""
+    stats_call = ("get_rating_statistics", "{}")
+    client = FakeClient(
+        [tool_response(stats_call), tool_response(stats_call), text_response("Antwort")]
+    )
+    run_agent(client, MODEL, QUESTION, max_rounds=3, reasoning_effort="low")
+    assert [call["reasoning_effort"] for call in client.calls] == ["low", "low", "low"]
+    assert "tools" not in client.calls[2]
+
+
+def test_without_reasoning_effort_the_parameter_is_left_out():
+    """Without reasoning_effort the parameter is not sent to the model."""
+    client = FakeClient([tool_response(("get_rating_statistics", "{}")), text_response("Antwort")])
+    run_agent(client, MODEL, QUESTION)
+    assert all("reasoning_effort" not in call for call in client.calls)
+
+
 def test_tool_calls_without_text_in_last_round_abort():
     """In the last round only the text counts; tool calls without text abort (D-49)."""
     stats_call = ("get_rating_statistics", "{}")
