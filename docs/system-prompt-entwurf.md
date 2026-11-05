@@ -1,6 +1,6 @@
-# System-Prompt – Entwurf (Planung, noch kein Code)
+# System-Prompt – Vorlage für `SYSTEM_PROMPT`
 
-Wird später als Konstante `SYSTEM_PROMPT` in `prompts.py` übernommen (D-23).
+In #4 wörtlich als Konstante `SYSTEM_PROMPT` in `prompts.py` übernommen (D-23); `tests/test_prompts.py` prüft, dass beide übereinstimmen.
 Verweise aufs Decision Log stehen in Klammern; im Code entfallen sie.
 
 ```text

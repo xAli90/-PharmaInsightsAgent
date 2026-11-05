@@ -19,7 +19,7 @@
   (pandas, `encoding="utf-8-sig"`).
 
 ## Code
-- Python, getestet mit 3.14 (D-55). Reiner `openai`-Client mit eigener
+- Python ab 3.11, getestet mit 3.11 und 3.14 (D-55). Reiner `openai`-Client mit eigener
   Tool-Schleife, kein Framework (D-02).
 - Code, Docstrings, Kommentare und Bezeichner auf Englisch. Texte, die Nutzer
   sehen (`SYSTEM_PROMPT`, Datenbasis, Warnhinweise), bleiben deutsch (D-60).
@@ -47,7 +47,7 @@
 ## Git und Issues
 - Board ist der Issues-Tab des Repos.
 - Je Issue ein Branch `issue/<n>-<name>` und ein PR mit „Closes #n“,
-  Squash-Merge durch den Repo-Owner (D-59). Nie auf `main` arbeiten.
+  Merge-Commit durch den Repo-Owner (D-59). Nie auf `main` arbeiten.
 - Commit-Nachrichten, Branch-Namen, PR-Titel und -Beschreibung auf Englisch
   (D-60). Commits mit `#<n>`, ohne Attribution-Trailer
   (kein `Co-Authored-By`, keine „Generated with“-Zeile, D-61).
