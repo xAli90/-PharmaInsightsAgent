@@ -1,8 +1,8 @@
 """Tests of the agent loop, with a fake client in place of the model (D-36).
 
 They cover the round limit and the last round without tools (D-16, D-49), errors that go
-back to the model versus errors that abort (D-50), the framed tool messages (D-62) and
-the tool results the loop returns (D-57).
+back to the model versus errors that abort (D-50), the framed tool messages (D-62), the
+tool results the loop returns (D-57) and the round reports for -v (D-32).
 """
 
 import json
@@ -69,6 +69,19 @@ def tool_response(*calls: tuple[str, str]) -> SimpleNamespace:
     return response_with(SimpleNamespace(content=None, tool_calls=tool_calls))
 
 
+def tool_response_with_text(content: str, *calls: tuple[str, str]) -> SimpleNamespace:
+    """Return a response that calls tools and also carries a text answer."""
+    response = tool_response(*calls)
+    response.choices[0].message.content = content
+    return response
+
+
+def with_usage(response: SimpleNamespace, tokens_in: int, tokens_out: int) -> SimpleNamespace:
+    """Add the usage a server reports to a prepared response and return it."""
+    response.usage = SimpleNamespace(prompt_tokens=tokens_in, completion_tokens=tokens_out)
+    return response
+
+
 def tool_results(call: dict) -> list[dict]:
     """Parse the framed tool messages a model call received, in order."""
     results = []
@@ -104,8 +117,7 @@ def test_answer_without_tools_takes_one_round():
 def test_round_limit_stops_a_model_that_keeps_calling_tools():
     """With max_rounds 3 the model is called exactly 3 times; tool calls in the last are ignored."""
     stats_call = ("get_rating_statistics", '{"drug": "PHM-101"}')
-    last = tool_response(stats_call)
-    last.choices[0].message.content = "Kurzfazit: Antwort trotz Tool-Aufruf."
+    last = tool_response_with_text("Kurzfazit: Antwort trotz Tool-Aufruf.", stats_call)
     client = FakeClient([tool_response(stats_call), tool_response(stats_call), last])
     answer, _ = run_agent(client, MODEL, QUESTION, max_rounds=3)
     assert answer == "Kurzfazit: Antwort trotz Tool-Aufruf."
@@ -312,3 +324,36 @@ def test_review_ids_from_results_without_reviews_are_empty():
 def test_call_tool_normalizes_drug_code():
     """call_tool passes the parsed arguments on, so the tool still normalizes the code."""
     assert call_tool("get_reviews", '{"drug": "phm 101"}') == get_reviews("PHM-101")
+
+
+def test_on_round_reports_tools_and_unknown_tokens():
+    """Each model call is reported with its tools; without usage the tokens are None (D-32)."""
+    client = FakeClient(
+        [tool_response(("get_reviews", '{"drug": "PHM-101"}')), text_response("Antwort")]
+    )
+    rounds = []
+    run_agent(client, MODEL, QUESTION, on_round=rounds.append)
+    assert [(info["round"], info["tools"]) for info in rounds] == [
+        (1, [("get_reviews", '{"drug": "PHM-101"}')]),
+        (2, []),
+    ]
+    assert all(info["tokens_in"] is None and info["tokens_out"] is None for info in rounds)
+    assert all(isinstance(info["seconds"], float) and info["seconds"] >= 0 for info in rounds)
+
+
+def test_on_round_reports_usage_of_the_server():
+    """The token counts come from the usage of the response (D-32)."""
+    client = FakeClient([with_usage(text_response("Antwort"), 812, 64)])
+    rounds = []
+    run_agent(client, MODEL, QUESTION, on_round=rounds.append)
+    [info] = rounds
+    assert (info["tokens_in"], info["tokens_out"]) == (812, 64)
+
+
+def test_on_round_reports_no_tools_for_the_last_round():
+    """Tool calls in the last round are never run, so that round reports none (D-49)."""
+    stats_call = ("get_rating_statistics", '{"drug": "PHM-101"}')
+    client = FakeClient([tool_response(stats_call), tool_response_with_text("Antwort", stats_call)])
+    rounds = []
+    run_agent(client, MODEL, QUESTION, max_rounds=2, on_round=rounds.append)
+    assert [(info["round"], info["tools"]) for info in rounds] == [(1, [stats_call]), (2, [])]
