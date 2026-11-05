@@ -26,6 +26,7 @@ from answer import finish_answer
 DEFAULT_BASE_URL = "http://localhost:1234/v1"
 DEFAULT_API_KEY = "lm-studio"
 DEFAULT_MAX_ROUNDS = 3
+DEFAULT_REASONING_EFFORT = "low"
 MIN_ROUNDS = 2
 
 EXIT_OK = 0
@@ -80,7 +81,10 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 
 def read_config(environ) -> dict:
-    """Read the settings; a missing model or a bad round limit raises ValueError (D-15, D-52)."""
+    """Read the settings; a missing model or a bad round limit raises ValueError (D-15, D-52).
+
+    The reasoning effort is passed to the model as given; "low" is the default (D-19).
+    """
     model = env_value(environ, "OPENAI_MODEL")
     if model is None:
         raise ValueError(MISSING_MODEL_ERROR)
@@ -90,6 +94,7 @@ def read_config(environ) -> dict:
         "api_key": env_value(environ, "OPENAI_API_KEY") or DEFAULT_API_KEY,
         "model": model,
         "max_rounds": DEFAULT_MAX_ROUNDS if max_rounds is None else parse_max_rounds(max_rounds),
+        "reasoning_effort": env_value(environ, "LLM_REASONING_EFFORT") or DEFAULT_REASONING_EFFORT,
     }
 
 
@@ -157,6 +162,7 @@ def answer_question(client, config: dict, question: str, verbose: bool) -> None:
         question,
         config["max_rounds"],
         on_round=print_round if verbose else None,
+        reasoning_effort=config["reasoning_effort"],
     )
     if verbose:
         print(total_line(rounds), file=sys.stderr)

@@ -38,7 +38,12 @@ class AgentError(Exception):
 
 
 def run_agent(
-    client, model: str, question: str, max_rounds: int = 3, on_round=None
+    client,
+    model: str,
+    question: str,
+    max_rounds: int = 3,
+    on_round=None,
+    reasoning_effort: str | None = None,
 ) -> tuple[str, list[dict]]:
     """Answer the question with tool calls; return the answer and the tool results in call order.
 
@@ -46,7 +51,8 @@ def run_agent(
     LM Studio may ignore tool_choice="none"; the model can then only answer with the data
     it already has (D-49). If on_round is given, it gets a dict after every model call:
     round (from 1), tools as (name, arguments) pairs, tokens_in, tokens_out (None without
-    usage) and seconds, the duration of the model call (D-32).
+    usage) and seconds, the duration of the model call (D-32). reasoning_effort goes to
+    every model call; None leaves it out (D-19).
     """
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -54,25 +60,38 @@ def run_agent(
     ]
     results = []
     for round_number in range(1, max_rounds):
-        message, call_stats = ask_model(client, model, messages, with_tools=True)
+        message, call_stats = ask_model(
+            client, model, messages, with_tools=True, reasoning_effort=reasoning_effort
+        )
         report_round(on_round, round_number, message.tool_calls or [], call_stats)
         if not message.tool_calls:
             return answer_text(message), results
         messages.append(assistant_message(message))
         results += run_tool_calls(message.tool_calls, messages)
-    message, call_stats = ask_model(client, model, messages, with_tools=False)
+    message, call_stats = ask_model(
+        client, model, messages, with_tools=False, reasoning_effort=reasoning_effort
+    )
     # Tool calls in the last round are never run, so the round reports none.
     report_round(on_round, max_rounds, [], call_stats)
     return answer_text(message), results
 
 
-def ask_model(client, model: str, messages: list[dict], with_tools: bool) -> tuple[object, dict]:
+def ask_model(
+    client,
+    model: str,
+    messages: list[dict],
+    with_tools: bool,
+    reasoning_effort: str | None = None,
+) -> tuple[object, dict]:
     """Call the model once; return its message and the call's tokens and seconds.
 
-    API errors and a response without choices abort (D-49, D-50). Servers may leave out
-    usage, then both token counts are None (D-32).
+    reasoning_effort is sent only if given (D-19). API errors and a response without
+    choices abort (D-49, D-50). Servers may leave out usage, then both token counts are
+    None (D-32).
     """
     options = {"tools": TOOLS} if with_tools else {}
+    if reasoning_effort is not None:
+        options["reasoning_effort"] = reasoning_effort
     started = time.perf_counter()
     try:
         response = client.chat.completions.create(model=model, messages=messages, **options)

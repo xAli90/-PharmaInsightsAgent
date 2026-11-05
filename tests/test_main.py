@@ -1,8 +1,9 @@
 """Tests of the command line, with the fake client in place of the model (D-36).
 
 They cover the exit codes (D-33, D-49, D-50), the checks of OPENAI_MODEL and
-AGENT_MAX_ROUNDS at the start (D-15, D-52), stdout versus stderr, the -v lines (D-32)
-and the interactive mode with a fresh start per question (D-30, D-31).
+AGENT_MAX_ROUNDS at the start (D-15, D-52), the reasoning effort (D-19), stdout versus
+stderr, the -v lines (D-32) and the interactive mode with a fresh start per question
+(D-30, D-31).
 """
 
 import io
@@ -33,7 +34,7 @@ SECONDS = r"\d+\.\d s"
 def environment(monkeypatch):
     """Set only OPENAI_MODEL, so neither a real .env nor the shell changes a test (D-45)."""
     monkeypatch.setattr(cli, "load_dotenv", lambda: None)
-    for name in ("OPENAI_BASE_URL", "OPENAI_API_KEY", "AGENT_MAX_ROUNDS"):
+    for name in ("OPENAI_BASE_URL", "OPENAI_API_KEY", "AGENT_MAX_ROUNDS", "LLM_REASONING_EFFORT"):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("OPENAI_MODEL", MODEL)
 
@@ -141,6 +142,7 @@ def test_defaults_for_base_url_and_api_key():
         "api_key": "lm-studio",
         "model": MODEL,
         "max_rounds": 3,
+        "reasoning_effort": "low",
     }
 
 
@@ -152,6 +154,21 @@ def test_max_rounds_from_the_environment_is_used(monkeypatch, capsys):
     assert cli.main([QUESTION], client=client) == 0
     assert len(client.calls) == 2
     assert "tools" not in client.calls[1]
+
+
+def test_default_reasoning_effort_low_is_sent():
+    """Without LLM_REASONING_EFFORT every model call gets "low" (D-19)."""
+    client = answering_client()
+    assert cli.main([QUESTION], client=client) == 0
+    assert [call["reasoning_effort"] for call in client.calls] == ["low", "low"]
+
+
+def test_reasoning_effort_from_the_environment_is_sent(monkeypatch):
+    """LLM_REASONING_EFFORT reaches every model call unchanged (D-19)."""
+    monkeypatch.setenv("LLM_REASONING_EFFORT", " medium ")
+    client = answering_client()
+    assert cli.main([QUESTION], client=client) == 0
+    assert [call["reasoning_effort"] for call in client.calls] == ["medium", "medium"]
 
 
 def test_verbose_prints_rounds_and_total_to_stderr(capsys):
