@@ -108,7 +108,7 @@ prompts.py           System-Prompt und Daten-Rahmen für Tool-Ergebnisse
 answer.py            Nachbearbeitung: Fettdruck, Datenbasis, Warnhinweise
 data/                der Datensatz pharma_reviews.csv
 tests/               Tests ohne Modell und Live-Tests (Marker live)
-docs/                Aufgabe, Decision Log, Prompt-Entwurf, Kontrolllauf
+docs/                Aufgabe, Decision Log, Prompt-Entwurf, Kontrolllauf, Folien
 examples/            die drei Beispielläufe
 requirements.txt     Pakete mit festen Versionen
 .env.example         Vorlage für .env mit Platzhaltern
@@ -137,4 +137,6 @@ genutzt.
 Alle Entscheidungen mit Begründung stehen im [Decision Log](docs/decision-log.md). Die
 ursprüngliche Aufgabenstellung liegt in [`docs/aufgabe.md`](docs/aufgabe.md), der
 Kontrolllauf zur Prompt Injection in
-[`docs/injection-kontrolllauf.md`](docs/injection-kontrolllauf.md).
+[`docs/injection-kontrolllauf.md`](docs/injection-kontrolllauf.md). Die Management-Präsentation
+(Titelseite und drei Folien mit Sprechernotizen) liegt als [`docs/folien.pptx`](docs/folien.pptx)
+und [`docs/folien.pdf`](docs/folien.pdf) bei.
